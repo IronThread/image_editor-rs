@@ -1,8 +1,6 @@
 use piston_window::*;
 
 fn main() {
-    
-    // gotta create a vector of rgba values multidimensional to the size of the screen
 
     let width = 200.0;
     let height = 200.0;
