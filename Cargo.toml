@@ -1,0 +1,17 @@
+[package]
+name = "image_editor" 
+version = "0.1.0"
+authors = ["IronThread <santinofuenteskillian@gmail.com>"]
+edition = "2018"
+license = "Apache-2.0/MIT"
+readme = "README.md"
+description = "Another editor of images."
+repository = "https://github.com/IronThread/image_editor"
+keywords = []
+categories = []
+
+[dependencies]
+piston = "0"
+piston_window = "0"
+piston-texture = "0"
+find_folder = "0"
