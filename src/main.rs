@@ -9,13 +9,11 @@ fn main() {
     let background_color = [255u8, 255, 255, 255];
     let mut active_color = [0u8, 0, 0, 255];
 
-    let mut image1: Vec<u8> = Vec::new();
+    let mut image1: Vec<u8> = Vec::with_capacity((width as usize * height as usize) * 4);
 
     for i2 in 0..width as u32 {
         for i in 0..height as u32 {
-            for e in background_color {
-                image1.push(e);
-            }
+            image1.extend(background_color.iter().copied());
         }
     }
 
@@ -26,7 +24,7 @@ fn main() {
     let size = Size { width, height };
     let mut brush_size = 4.0;
 
-    let mut window: PistonWindow = WindowSettings::new("piston: hello_world", size)
+    let mut window: PistonWindow = WindowSettings::new("image editor", size)
         .exit_on_esc(true)
         .vsync(false)
         .build()
