@@ -24,7 +24,7 @@ fn main() {
     let mut should_paint = false;
 
     let size = Size { width, height };
-    let mut brush_size = 1.0;
+    let mut brush_size = 4.0;
 
     let mut window: PistonWindow = WindowSettings::new("piston: hello_world", size)
         .exit_on_esc(true)
@@ -45,11 +45,12 @@ fn main() {
         if let Some(mouse_cursor) = e.mouse_cursor_args() {
             mc = mouse_cursor;
             if should_paint {
-                for (w, h) in (mc[0] as u32..mc[0] as u32 + brush_size as u32)
-                    .zip((mc[1] as u32..mc[1] as u32 + brush_size as u32))
+                for w in (mc[0] as u32..mc[0] as u32 + brush_size as u32)
                 {
-                    if w < width as u32 && h < height as u32 {
-                        image1.put_pixel(w, h, Rgba(active_color));
+                    for h in (mc[1] as u32..mc[1] as u32 + brush_size as u32) {
+                        if w < width as u32 && h < height as u32 {
+                            image1.put_pixel(w, h, Rgba(active_color));
+                        }
                     }
                 }
             }

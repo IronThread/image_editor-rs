@@ -6,7 +6,7 @@ edition = "2018"
 license = "Apache-2.0/MIT"
 readme = "README.md"
 description = "Another editor of images."
-repository = "https://github.com/IronThread/image_editor"
+repository = "https://github.com/IronThread/image_editor-rs"
 keywords = []
 categories = []
 
