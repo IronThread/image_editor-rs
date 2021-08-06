@@ -1,9 +1,8 @@
 use piston_window::*;
 
-use image2::{Rgba, ImageBuffer};
+use image2::{ImageBuffer, Rgba};
 
 fn main() {
-
     let width = 200.0;
     let height = 200.0;
 
@@ -16,26 +15,18 @@ fn main() {
         for i in 0..height as u32 {
             for e in background_color {
                 image1.push(e);
-            }            
+            }
         }
     }
 
-    let mut image1 = <ImageBuffer<Rgba<u8>, Vec<u8>>>::from_vec(width as u32, height as u32, image1).unwrap();
+    let mut image1 =
+        <ImageBuffer<Rgba<u8>, Vec<u8>>>::from_vec(width as u32, height as u32, image1).unwrap();
     let mut should_paint = false;
 
-    let size = Size {
-                width,
-                height,
-            };
-    let mut brush_size = Size {
-        width: 1.0,
-        height: 1.0,
-    };
+    let size = Size { width, height };
+    let mut brush_size = 1.0;
 
-    let mut window: PistonWindow = WindowSettings::new(
-            "piston: hello_world",
-            size,            
-        )
+    let mut window: PistonWindow = WindowSettings::new("piston: hello_world", size)
         .exit_on_esc(true)
         .vsync(false)
         .build()
@@ -43,7 +34,7 @@ fn main() {
 
     let mut texture_context = TextureContext {
         factory: window.factory.clone(),
-        encoder: window.factory.create_command_buffer().into()
+        encoder: window.factory.create_command_buffer().into(),
     };
 
     let mut glyphs = window.load_font("assets/FiraSans-Regular.ttf").unwrap();
@@ -51,11 +42,16 @@ fn main() {
     let mut mc = [0.0, 0.0];
     window.set_lazy(true);
     while let Some(e) = window.next() {
-
         if let Some(mouse_cursor) = e.mouse_cursor_args() {
             mc = mouse_cursor;
             if should_paint {
-                image1.put_pixel(mc[0] as u32, mc[1] as u32, Rgba(active_color));
+                for (w, h) in (mc[0] as u32..mc[0] as u32 + brush_size as u32)
+                    .zip((mc[1] as u32..mc[1] as u32 + brush_size as u32))
+                {
+                    if w < width as u32 && h < height as u32 {
+                        image1.put_pixel(w, h, Rgba(active_color));
+                    }
+                }
             }
         }
 
@@ -73,35 +69,31 @@ fn main() {
             ).unwrap();
             */
 
-            let texture = Texture::from_image(
-                            &mut texture_context, 
-                            &image1,
-                            &TextureSettings::new()
-                        ).unwrap();
+            let texture =
+                Texture::from_image(&mut texture_context, &image1, &TextureSettings::new())
+                    .unwrap();
 
             image(&texture, transform, g);
             // Update glyphs before rendering.
             glyphs.factory.encoder.flush(device);
         });
-        
-        match e.button_args()
-            {
+
+        match e.button_args() {
             Some(ButtonArgs {
                 state: ButtonState::Press,
                 button: Button::Mouse(MouseButton::Left),
                 ..
             }) => {
-                should_paint = true;                
-            },
+                should_paint = true;
+            }
             Some(ButtonArgs {
                 state: ButtonState::Release,
                 button: Button::Mouse(MouseButton::Left),
-                .. }) => {
-                    should_paint = false;
-                
-            },
+                ..
+            }) => {
+                should_paint = false;
+            }
             _ => {}
         }
-
     }
 }
