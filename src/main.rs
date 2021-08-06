@@ -1,5 +1,7 @@
 use piston_window::*;
 
+use image2::{Rgba, ImageBuffer};
+
 fn main() {
 
     let width = 200.0;
@@ -17,6 +19,9 @@ fn main() {
             }            
         }
     }
+
+    let mut image1 = <ImageBuffer<Rgba<u8>, Vec<u8>>>::from_vec(width as u32, height as u32, image1).unwrap();
+    let mut should_paint = false;
 
     let size = Size {
                 width,
@@ -41,18 +46,19 @@ fn main() {
         encoder: window.factory.create_command_buffer().into()
     };
 
-    let mut texture = Texture::from_memory_alpha(
-                        &mut texture_context, 
-                        &image1,
-                        size.width as u32,
-                        size.height as u32,
-                        &TextureSettings::new()).unwrap();
-
     let mut glyphs = window.load_font("assets/FiraSans-Regular.ttf").unwrap();
 
     let mut mc = [0.0, 0.0];
     window.set_lazy(true);
     while let Some(e) = window.next() {
+
+        if let Some(mouse_cursor) = e.mouse_cursor_args() {
+            mc = mouse_cursor;
+            if should_paint {
+                image1.put_pixel(mc[0] as u32, mc[1] as u32, Rgba(active_color));
+            }
+        }
+
         window.draw_2d(&e, |c, g, device| {
             let transform = c.transform.trans(0.0, 0.0);
 
@@ -67,14 +73,16 @@ fn main() {
             ).unwrap();
             */
 
+            let texture = Texture::from_image(
+                            &mut texture_context, 
+                            &image1,
+                            &TextureSettings::new()
+                        ).unwrap();
+
             image(&texture, transform, g);
             // Update glyphs before rendering.
             glyphs.factory.encoder.flush(device);
         });
-
-        if let Some(mouse_cursor) = e.mouse_cursor_args() {
-            mc = mouse_cursor;
-        }
         
         match e.button_args()
             {
@@ -83,14 +91,14 @@ fn main() {
                 button: Button::Mouse(MouseButton::Left),
                 ..
             }) => {
-                texture::UpdateTexture::update(
-                    &mut texture,
-                    &mut texture_context,
-                    texture::Format::Rgba8,
-                    &active_color[..],
-                    [mc[0] as u32, mc[1] as u32],
-                    brush_size
-                );
+                should_paint = true;                
+            },
+            Some(ButtonArgs {
+                state: ButtonState::Release,
+                button: Button::Mouse(MouseButton::Left),
+                .. }) => {
+                    should_paint = false;
+                
             },
             _ => {}
         }
